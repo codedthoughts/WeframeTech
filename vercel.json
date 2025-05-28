@@ -5,9 +5,5 @@
       "src": "next.config.mjs",
       "use": "@vercel/next"
     }
-  ],
-  "env": {
-    "PAYLOAD_SECRET": "@payload_secret",
-    "DATABASE_URI": "@database_uri"
-  }
+  ]
 }
