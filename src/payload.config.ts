@@ -6,9 +6,13 @@ import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
+// Temporarily removing plugin imports until we can resolve the correct import syntax
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
+import Tenants from './collections/Tenants'
+import Forms from './collections/Forms'
+import FormSubmissions from './collections/FormSubmissions'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -20,7 +24,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media],
+  collections: [Users, Media, Tenants, Forms, FormSubmissions],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -35,5 +39,7 @@ export default buildConfig({
   plugins: [
     payloadCloudPlugin(),
     // storage-adapter-placeholder
+    // Temporarily removing form builder and multi-tenant plugins
+    // until we can resolve the correct import syntax
   ],
 })

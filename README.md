@@ -1,67 +1,79 @@
-# Payload Blank Template
+# Payload Multi-Tenant Form Builder
 
-This template comes configured with the bare minimum to get started on anything you need.
+This project implements a multi-tenant form builder using Payload CMS with Supabase PostgreSQL database. It allows creating and managing forms across multiple tenants, with form submission capabilities.
 
-## Quick start
+## Database Provider
 
-This template can be deployed directly from our Cloud hosting and it will setup MongoDB and cloud S3 object storage for media.
+This project uses **Supabase** as the PostgreSQL database provider. Supabase offers:
 
-## Quick Start - local setup
+- Managed PostgreSQL database
+- Automatic backups
+- Connection pooling
+- Database monitoring
 
-To spin up this template locally, follow these steps:
+## Implementation Details
 
-### Clone
+### Form Builder Implementation
 
-After you click the `Deploy` button above, you'll want to have standalone copy of this repo on your machine. If you've already cloned this repo, skip to [Development](#development).
+The form builder functionality is implemented using the `@payloadcms/plugin-form-builder` plugin. This allows:
 
-### Development
+- Creating custom forms with various field types
+- Managing form submissions
+- Customizing form validation
 
-1. First [clone the repo](#clone) if you have not done so already
-2. `cd my-project && cp .env.example .env` to copy the example environment variables. You'll need to add the `MONGODB_URI` from your Cloud project to your `.env` if you want to use S3 storage and the MongoDB database that was created for you.
+### Multi-Tenancy Implementation
 
-3. `pnpm install && pnpm dev` to install dependencies and start the dev server
-4. open `http://localhost:3000` to open the app in your browser
+Multi-tenancy is implemented using the `@payloadcms/plugin-multi-tenant` plugin, which provides:
 
-That's it! Changes made in `./src` will be reflected in your app. Follow the on-screen instructions to login and create your first admin user. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
+- Tenant isolation
+- Per-tenant form management
+- Access control based on tenant
 
-#### Docker (Optional)
+## API Endpoints
 
-If you prefer to use Docker for local development instead of a local MongoDB instance, the provided docker-compose.yml file can be used.
+### Form Management
 
-To do so, follow these steps:
+- **GET** `/api/forms` - List all forms
+- **GET** `/api/forms/:id` - Get a specific form
+- **POST** `/api/forms` - Create a new form
+- **PATCH** `/api/forms/:id` - Update a form
+- **DELETE** `/api/forms/:id` - Delete a form
 
-- Modify the `MONGODB_URI` in your `.env` file to `mongodb://127.0.0.1/<dbname>`
-- Modify the `docker-compose.yml` file's `MONGODB_URI` to match the above `<dbname>`
-- Run `docker-compose up` to start the database, optionally pass `-d` to run in the background.
+### Form Submissions
 
-## How it works
+- **POST** `/api/form-submissions` - Submit a form response
+- **GET** `/api/form-submissions` - List all form submissions
+- **GET** `/api/form-submissions/:id` - Get a specific submission
 
-The Payload config is tailored specifically to the needs of most websites. It is pre-configured in the following ways:
+### Tenants
 
-### Collections
+- **GET** `/api/tenants` - List all tenants
+- **GET** `/api/tenants/:id` - Get a specific tenant
+- **POST** `/api/tenants` - Create a new tenant
 
-See the [Collections](https://payloadcms.com/docs/configuration/collections) docs for details on how to extend this functionality.
+## Authentication & Permissions
 
-- #### Users (Authentication)
+The application uses Payload's built-in authentication system. Access control is implemented at the collection level to ensure tenants can only access their own forms and submissions.
 
-  Users are auth-enabled collections that have access to the admin panel.
+## Setup Instructions
 
-  For additional help, see the official [Auth Example](https://github.com/payloadcms/payload/tree/main/examples/auth) or the [Authentication](https://payloadcms.com/docs/authentication/overview#authentication-overview) docs.
+1. Create a Supabase account and project
+2. Configure environment variables in `.env`:
+   ```
+   PAYLOAD_SECRET=your_payload_secret
+   DATABASE_URI=your_supabase_connection_string
+   ```
+3. Install dependencies: `npm install`
+4. Start the development server: `npm run dev`
+5. Access the admin panel at `http://localhost:3000/admin`
 
-- #### Media
+## Testing with Postman
 
-  This is the uploads enabled collection. It features pre-configured sizes, focal point and manual resizing to help you manage your pictures.
+You can test the API endpoints using Postman:
 
-### Docker
+1. Create a tenant
+2. Create a form associated with the tenant
+3. Submit form responses
+4. Query form submissions
 
-Alternatively, you can use [Docker](https://www.docker.com) to spin up this template locally. To do so, follow these steps:
-
-1. Follow [steps 1 and 2 from above](#development), the docker-compose file will automatically use the `.env` file in your project root
-1. Next run `docker-compose up`
-1. Follow [steps 4 and 5 from above](#development) to login and create your first admin user
-
-That's it! The Docker instance will help you get up and running quickly while also standardizing the development environment across your teams.
-
-## Questions
-
-If you have any issues or questions, reach out to us on [Discord](https://discord.com/invite/payload) or start a [GitHub discussion](https://github.com/payloadcms/payload/discussions).
+See the API documentation section for request/response examples.
