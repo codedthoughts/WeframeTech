@@ -39,18 +39,13 @@ export async function POST(req: Request) {
 
     const form = formResponse.docs[0];
 
-    // Create a form submission
-    // Using type assertion to handle the tenant field
+    // Create a form submission with all required fields
+    // Using type assertion to bypass TypeScript errors
     const formSubmissionData = {
       form: formId,
       submissionData,
-      createdAt: new Date().toISOString(),
-    } as any;
-    
-    // Add tenant ID if provided
-    if (tenantId) {
-      formSubmissionData.tenant = tenantId;
-    }
+      tenant: tenantId, // Tenant is required in our schema
+    } as any; // Type assertion to bypass strict type checking
     
     const submission = await payload.create({
       collection: 'form-submissions',
@@ -58,7 +53,7 @@ export async function POST(req: Request) {
     });
 
     // Handle form confirmation
-    let confirmation = {
+    const confirmation = {
       type: 'message',
       message: 'Thank you for your submission!',
       redirectURL: '',
@@ -67,7 +62,11 @@ export async function POST(req: Request) {
     // Add confirmation details if available in the form
     if (form) {
       // Using type assertion since we know these fields exist in our schema
-      const formWithConfirmation = form as any;
+      const formWithConfirmation = form as {
+        confirmationType?: string;
+        confirmationMessage?: string;
+        redirectURL?: string;
+      };
       if (formWithConfirmation.confirmationType) {
         confirmation.type = formWithConfirmation.confirmationType;
       }
@@ -84,12 +83,12 @@ export async function POST(req: Request) {
       submission,
       confirmation,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error submitting form:', error);
     return NextResponse.json(
       {
         message: 'An error occurred while submitting the form',
-        error: error.message || 'Unknown error',
+        error: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );
@@ -130,12 +129,12 @@ export async function GET(req: Request) {
     return NextResponse.json({
       form: formResponse,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching form:', error);
     return NextResponse.json(
       {
         message: 'An error occurred while fetching the form',
-        error: error.message || 'Unknown error',
+        error: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );

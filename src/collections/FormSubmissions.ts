@@ -67,7 +67,7 @@ const FormSubmissions: CollectionConfig = {
   ],
   hooks: {
     beforeChange: [
-      ({ data, req }) => {
+      ({ data, req: _req }) => {
         return {
           ...data,
           createdAt: new Date().toISOString(),
